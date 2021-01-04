@@ -1,1 +1,12 @@
-Schnapsen by Group 52
+# SCHNAPSEN by GROUP 52
+## This is the test
+
+### This is the test 3
+
+Can you guys see when I'm editing?
+
+#### This has been edited from the computer
+
+Just testing how this works...
+
+Hello!
