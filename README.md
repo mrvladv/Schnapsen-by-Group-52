@@ -7,10 +7,6 @@ Can you guys see when I'm editing?
 
 yup
 
-### This is the test 3
-
-Can you guys see when I'm editing?
-
 #### This has been edited from the computer
 
 Just testing how this works...
