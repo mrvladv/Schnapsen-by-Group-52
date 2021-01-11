@@ -23,7 +23,7 @@ from bots.rand import rand
 
 from bots.ml.ml import features
 
-def create_dataset(path, player=rand.Bot(), games=2000, phase=1):
+def create_dataset(path, player=rdeep.Bot(), games=2000, phase=1):
     """Create a dataset that can be used for training the ML bot model.
     The dataset is created by having the player (bot) play games against itself.
     The games parameter indicates how many games will be started.
