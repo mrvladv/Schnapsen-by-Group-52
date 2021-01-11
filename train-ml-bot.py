@@ -19,6 +19,9 @@ from sklearn.neural_network import MLPClassifier
 import joblib
 
 from bots.rand import rand
+from bots.rdeep import rdeep
+from bots.alphabeta import alphabeta
+from bots.bulyy import bully
 # from bots.rdeep import rdeep
 
 from bots.ml.ml import features
