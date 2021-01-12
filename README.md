@@ -1,14 +1,7 @@
 # SCHNAPSEN by GROUP 52
-## This is the test
 
-### This is the test 3
+## Research question
 
-Can you guys see when I'm editing?
+## Experiment
 
-yup
-
-#### This has been edited from the computer
-
-Just testing how this works...
-
-Hello!
+## 
