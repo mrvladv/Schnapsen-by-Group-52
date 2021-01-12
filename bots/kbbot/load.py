@@ -2,7 +2,7 @@ from .kb import KB, Boolean, Integer
 
 # Initialise all variables that you need for you strategies and game knowledge.
 # Add those variables here.. The following list is complete for the Play Jack strategy.
-# Play ACE strategy KB
+# Play ACE strategy KB and play 10 strategy
 A0 = Boolean('a0')
 A1 = Boolean('a1')
 A2 = Boolean('a2')
