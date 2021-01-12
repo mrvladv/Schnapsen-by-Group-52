@@ -23,7 +23,8 @@ from bots.rdeep import rdeep
 
 from bots.ml.ml import features
 
-def create_dataset(path, player=rdeep.Bot(), games=1000, phase=2):
+
+def create_dataset(path, player=rdeep.Bot(), games=5000, phase=1):
     """Create a dataset that can be used for training the ML bot model.
     The dataset is created by having the player (bot) play games against itself.
     The games parameter indicates how many games will be started.
@@ -36,7 +37,7 @@ def create_dataset(path, player=rdeep.Bot(), games=1000, phase=2):
     path -- the pathname where the dataset is to be stored
     player -- the player which will play against itself, default the rand Bot
     games -- the number of games to play, default 2000
-    phase -- wheter to start the games in phase 1, the default, or phase 2
+    phase -- whether to start the games in phase 1, the default, or phase 2
     """
 
     data = []
