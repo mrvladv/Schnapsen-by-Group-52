@@ -281,7 +281,7 @@ class State:
 		return state
 
 	@staticmethod
-	def generate(id=None, phase=1):
+	def generate(id=12, phase=1):
 		"""
 		:param id: The seed used for random generation. Defaults at random, but can be set for deterministic state generation
 		:param phase: The phase at which your generated state starts at

@@ -4,7 +4,7 @@ A basic adaptive bot. This is part of the third worksheet.
 
 """
 
-from api import State, util
+from api import State, util, Deck
 import random, os
 from itertools import chain
 
@@ -94,6 +94,23 @@ def maximizing(state):
     """
     return state.whose_turn() == 1
 
+def count_possible_marriages(state):
+    # Function which counts how many marriages there are in the players hand
+    marriages = 0
+    if state.whose_turn() == 1:
+        for move in state.moves():
+            if move[0] == (not None, not None):
+                marriages += 1
+    return marriages
+
+def count_trump_exchange(state):
+    # Function which counts how many possible trump exchanges there are in the players hand
+    trump_exchanges = 0
+    if state.whose_turn() == 1:
+        for move in state.moves():
+            if move[0] == (None, not None):
+                trump_exchanges += 1
+    return trump_exchanges
 
 def features(state):
     # type: (State) -> tuple[float, ...]
@@ -135,6 +152,17 @@ def features(state):
 
     # Add opponent's played card to feature set
     opponents_played_card = state.get_opponents_played_card()
+
+    # Add possible marriages to feature set
+    possible_marriages = count_possible_marriages(state)
+
+    # Add trump exchanges to feature set
+    possible_trump_exchange = count_trump_exchange(state)
+
+
+
+
+
 
 
     ################## You do not need to do anything below this line ########################
@@ -186,6 +214,12 @@ def features(state):
     opponents_played_card_onehot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     opponents_played_card_onehot[opponents_played_card if opponents_played_card is not None else 20] = 1
     feature_set += opponents_played_card_onehot
+
+    # Append one-hot marriages to feature set
+    feature_set += [1, 0] if possible_marriages >= 1 else [0, 1]
+
+    # Append one-hot trump exchange to feature set
+    feature_set += [1, 0] if possible_trump_exchange >= 1 else [0, 1]
 
     # Return feature set
     return feature_set
