@@ -20,10 +20,11 @@ import joblib
 
 # from bots.rand import rdeep
 from bots.rdeep import rdeep
+#from bots.kbbot import kbbot
 
 from bots.ml.ml import features
 
-def create_dataset(path, player=rdeep.Bot(), games=1000, phase=2):
+def create_dataset(path, player=rdeep.Bot(), games=100, phase=1):
     """Create a dataset that can be used for training the ML bot model.
     The dataset is created by having the player (bot) play games against itself.
     The games parameter indicates how many games will be started.
@@ -121,7 +122,7 @@ parser.add_argument("--no-train",
 options = parser.parse_args()
 
 if options.overwrite or not os.path.isfile(options.dset_path):
-    create_dataset(options.dset_path, player=rdeep.Bot(), games=10000)
+    create_dataset(options.dset_path, player=rdeep.Bot(), games=100)
 
 if options.train:
 
