@@ -11,42 +11,44 @@ import random
 # from .kb import KB, Boolean, Integer
 
 # CONSTANTS
-OPTIMAL_NUMBER = 1
-HIGH_NUMBER = 1
+TRUMP_OPTIMAL_NUMBER = 2            # How many cards
+HIGH_NUMBER = 2             # How many cards
 
 
-def get_card_value(tup):
-    card = tup[0]
-    if card is None:
+def get_card_value(testing_card):
+    if type(testing_card) is tuple:
+        card = testing_card[0]
+        if card is None:
+            value = 2
+        elif card % 5 == 0:
+            value = 11
+        elif card % 5 == 1:  # 10s
+            value = 10
+        elif card % 5 == 2:   # Kings
+            value = 4
+        elif card % 5 == 3:   # Queens
+            value = 3
+        else:               # Jacks
+            value = 2
+        return value
+    elif type(testing_card) is int:
+        card = testing_card
+        if card is None:      # Tuple (None, int) is possible jack trump exchange, meaning the card is Jack
+            value = 2
+        elif card % 5 == 0:
+            value = 11
+        elif card % 5 == 1:  # 10s
+            value = 10
+        elif card % 5 == 2:  # Kings
+            value = 4
+        elif card % 5 == 3:  # Queens
+            value = 3
+        else:  # Jacks
+            value = 2
+        return value
+    else:
         value = 2
-    elif card % 5 == 0:
-        value = 11
-    elif card % 5 == 1:  # 10s
-        value = 10
-    elif card % 5 == 2:   # Kings
-        value = 4
-    elif card % 5 == 3:   # Queens
-        value = 3
-    else:               # Jacks
-        value = 2
-    return value
-
-
-def get_opponent_value(number):
-    card = number
-    if card is None:
-        value = 2
-    elif card % 5 == 0:
-        value = 11
-    elif card % 5 == 1:  # 10s
-        value = 10
-    elif card % 5 == 2:   # Kings
-        value = 4
-    elif card % 5 == 3:   # Queens
-        value = 3
-    else:               # Jacks
-        value = 2
-    return value
+        return value
 
 
 def sort_cards(tup):
@@ -67,137 +69,232 @@ class Bot:
     def get_move(self, state):
         # Get all legal moves
         moves = state.moves()
-        print("Moves beginning:", moves)
+        print("ALL LEGAL MOVES:", moves)
 
         # Get at which phase we are playing
         current_phase = state.get_phase()
 
         # Different "good" moves starting lists
-        possible_moves = []
-        moves_same_suit = []
         moves_trump = []
         high_cards = []
         low_cards = []
         possible_trumps_ex = []
-        trumps_counter = 0
-        good_moves_counter = 0
-        safe_moves_counter = 0
+        possible_marriage = []
 
-        # GET ALL TRUMPS moves available
-        # IF more than OPTIMAL NUMBER of trump cards in hand, try to win the trick by playing the trump (AGGRESSIVE TRUMP PLAY)
-        # If low number of moves_trump, we keep the cards for phase 2 (PASSIVE PLAY)
-        for index, move in enumerate(moves):
-            # if move[0] is not None and Deck.get_suit(move[0]) == state.get_trump_suit():
-            #     moves_trump.append(move)
-            #     possible_moves.append(move)
-            #     trumps_counter += 1
-            if move[0] is None:
-                possible_trumps_ex.append(move)
-            elif get_opponent_value(move[0]) == 11 or get_opponent_value(move[0]) == 10:
-                high_cards.append(move)
-                good_moves_counter += 1
-            else:
-                low_cards.append(move)
-                possible_moves.append(move)
-                safe_moves_counter += 1
+        # IF BOT/PLAYER plays first
+        if state.get_opponents_played_card() is None:
+            # SORTING
+            # GET ALL TRUMPS moves available
+            # IF more than OPTIMAL NUMBER of trump cards in hand, try to win the trick by playing the trump (AGGRESSIVE TRUMP PLAY)
+            # If low number of moves_trump, we keep the cards for phase 2 (PASSIVE PLAY)
+            for index, move in enumerate(moves):
+                if move[0] is not None and Deck.get_suit(move[0]) == state.get_trump_suit():
+                    moves_trump.append(move)
+                elif move[0] is None:
+                    possible_trumps_ex.append(move)
+                elif move[0] is int and move[1] is int:
+                    possible_marriage.append(move)
+                elif get_card_value(move[0]) == 11 or get_card_value(move[0]) == 10:
+                    high_cards.append(move)
+                else:
+                    low_cards.append(move)
 
-        num_of_moves = len(possible_moves)
-        print("Possible moves:", possible_moves)
-        for i in range(num_of_moves):
-            if get_opponent_value(possible_moves[i][0]) is None:
-                possible_trumps_ex.append(possible_moves[i])
-            elif get_opponent_value(possible_moves[i][0]) == 11:
-                high_cards.append(possible_moves[i])
-                good_moves_counter += 1
-            elif get_opponent_value(possible_moves[i][0]) == 10:
-                high_cards.append(possible_moves[i])
-                good_moves_counter += 1
-            # NEW BRANCH OF PROBLEMS
+            # print("====================+ PLAYER 1 TURN +====================")
+            # print("Phase: ", state.get_phase())
+            # print("TRUMP moves:", moves_trump)
+            # print("H-I-G-H cards: ", high_cards)
+            # print("l_o_w cards: ", low_cards)
+            # print("Possible trump exchange: ", possible_trumps_ex)
+            # print("=====")
+            # print("TRUMP count:", len(moves_trump))
+            # print("High card count:", len(high_cards))
+            # print("Low card count:", len(low_cards))
+            # print("Possible marriage:", possible_marriage)
+            # print("====================+ PRINT END +====================")
 
-        print("Trump moves:", moves_trump)
-        print("Possible moves:", possible_moves)
-        print("High cards: ", high_cards)
-        print("Low cards: ", low_cards)
-        print("Possible trump exchange: ", possible_trumps_ex)
-        print("=====")
-        print("Trump counter:", trumps_counter)
-        print("Good moves counter:", good_moves_counter)
-        print("Safe moves counter:", safe_moves_counter)
+            if current_phase == 1:
+                if len(moves_trump) >= TRUMP_OPTIMAL_NUMBER:
+                    sort_cards(moves_trump)
+                    chosen_move = moves_trump[0]
+                    return chosen_move
+                elif len(moves_trump) == 0 and len(high_cards) > len(low_cards):
+                    sort_cards(high_cards)
+                    chosen_move = high_cards[0]
+                    return chosen_move
+                elif len(high_cards) < len(low_cards):
+                    sort_cards(low_cards)
+                    chosen_move = low_cards[0]
+                    return chosen_move
+                elif len(high_cards) == len(low_cards):
+                    sort_cards(high_cards)
+                    chosen_move = high_cards[0]
+                    return chosen_move
 
-        if trumps_counter > OPTIMAL_NUMBER and current_phase == 1:
-            sort_cards(moves_trump)
-            chosen_move = moves_trump[trumps_counter - 1]
-            return chosen_move
-        elif good_moves_counter and safe_moves_counter > 1:
-            sort_cards(low_cards)
-            chosen_move = low_cards[safe_moves_counter - 1]
-            return chosen_move
-
-        if trumps_counter > 0 and current_phase == 2:
-            sort_cards(moves_trump)
-            chosen_move = moves_trump[trumps_counter - 1]
-            return chosen_move
-        elif current_phase == 2 and len(high_cards) > 0:
-            sort_cards(high_cards)
-            chosen_move = high_cards[0]
-            return chosen_move
-        elif current_phase == 2 and len(low_cards) > 0:
-            sort_cards(low_cards)
-            chosen_move = low_cards[0]
-            return chosen_move
-
+            if current_phase == 2:                      # ALWAYS TRY TO PLAY TRUMPS IN THE PHASE 2
+                if len(moves_trump) > 0:
+                    sort_cards(moves_trump)
+                    chosen_move = moves_trump[0]
+                    return chosen_move
+                elif len(moves_trump) == 0 and len(high_cards) > len(low_cards):
+                    sort_cards(high_cards)
+                    chosen_move = high_cards[0]
+                    return chosen_move
+                elif len(high_cards) < len(low_cards):
+                    sort_cards(low_cards)
+                    chosen_move = low_cards[0]
+                    return chosen_move
+                elif len(high_cards) == len(low_cards):
+                    sort_cards(high_cards)
+                    chosen_move = high_cards[0]
+                    return chosen_move
         # IF THE OPPONENT PLAYED A CARD
-        if state.get_opponents_played_card() is not None:
-            # Different "good" moves starting lists
-            possible_moves = []
+        elif state.get_opponents_played_card() is not None:
+            opponent_card_suit = Deck.get_suit(state.get_opponents_played_card())
+            opponent_card_value = get_card_value(state.get_opponents_played_card())
+            # Different "good" moves starting lists, used later for sorting
             moves_same_suit = []
             moves_trump = []
             high_cards = []
             low_cards = []
-            trumps_counter = 0
-            good_moves_counter = 0
-            safe_moves_counter = 0
+            high_same_suit = []
+            low_same_suit = []
+            possible_trumps_ex = []
 
+            # SORTING
             # Get all TRUMPS
             for index, move in enumerate(moves):
                 if move[0] is not None and Deck.get_suit(move[0]) == state.get_trump_suit():
                     moves_trump.append(move)
-                    possible_moves.append(move)
-                    trumps_counter += 1
+                # Get all moves of the same suit as the opponent's played card
+                elif move[0] is not None and Deck.get_suit(move[0]) != state.get_trump_suit():
+                    if move[0] is not None and Deck.get_suit(move[0]) == opponent_card_suit:
+                        moves_same_suit.append(move)
+                        if get_card_value(move[0]) < opponent_card_value:
+                            low_same_suit.append(move)
+                            # low_cards.append(move)
+                        elif get_card_value(move[0]) > opponent_card_value:
+                            high_same_suit.append(move)
+                            # high_cards.append(move)
+                elif move[0] is None:
+                    possible_trumps_ex.append(move)
 
-            # Get all moves of the same suit as the opponent's played card, trying to win the trick and some points
+            # Get other moves of the different suit
             for index, move in enumerate(moves):
-                if move[0] is not None and Deck.get_suit(move[0]) == Deck.get_suit(state.get_opponents_played_card()):
-                    moves_same_suit.append(move)
-                    if get_opponent_value(move[0]) < get_opponent_value(state.get_opponents_played_card()):
-                        low_cards.append(move)
-                        safe_moves_counter += 1
-                    else:
+                if move[0] is not None and Deck.get_suit(move[0]) != opponent_card_suit:
+                    if get_card_value(move[0]) >= opponent_card_value:
                         high_cards.append(move)
-                        good_moves_counter += 1
+                    else:
+                        low_cards.append(move)
+                elif move[0] is None:
+                    possible_trumps_ex.append(move)
 
-            # Get other low valid cards
-            for index, move in enumerate(moves):
-                if move[0] is not None and Deck.get_suit(move[0]) != Deck.get_suit(state.get_opponents_played_card()):
-                    low_cards.append(move)
-                    safe_moves_counter += 1
+            # print("====================+ PLAYER 2 TURN +====================")
+            # print("Phase: ", state.get_phase())
+            # print("OPPONENT SUIT:", opponent_card_suit)
+            # print("OPPONENT VALUE: ", opponent_card_value)
+            # print("TRUMP moves:", moves_trump)
+            # print("H-I-G-H cards: ", high_cards)
+            # print("l_o_w cards: ", low_cards)
+            # print("High SAME SUIT:", high_same_suit)
+            # print("Low SAME SUIT:", low_same_suit)
+            # print("Possible trump exchange: ", possible_trumps_ex)
+            # print("Moves SAME SUIT:", moves_same_suit)
+            # print("=====")
+            # print("TRUMP count:", len(moves_trump))
+            # print("High card count:", len(high_cards))
+            # print("Low card count:", len(low_cards))
+            # print("====================+ PRINT END +====================")
 
-            if trumps_counter > OPTIMAL_NUMBER:
-                sort_cards(moves_trump)
-                chosen_move = moves_trump[trumps_counter - 1]
-                return chosen_move
-            elif good_moves_counter == 1 and get_opponent_value(state.get_opponents_played_card()) < get_card_value(moves_same_suit[0]):
-                chosen_move = moves_same_suit[0]
-                return chosen_move
-            elif len(low_cards) > HIGH_NUMBER:
-                chosen_move = random.choice(low_cards)
-                return chosen_move
-            else:
-                if good_moves_counter > 1:
+            if current_phase == 1:
+                if len(moves_trump) >= TRUMP_OPTIMAL_NUMBER:
+                    sort_cards(moves_trump)
+                    chosen_move = moves_trump[len(moves_trump) - 1]               # Play weakest trump
+                    return chosen_move
+                elif len(high_same_suit) > 0:
+                    sort_cards(high_same_suit)
+                    if opponent_card_value < get_card_value(high_same_suit[0]):
+                        chosen_move = high_same_suit[0]
+                        return chosen_move
+                elif len(high_cards) > len(low_cards):
+                    sort_cards(high_cards)
+                    if opponent_card_value >= get_card_value(high_cards[0]):
+                        chosen_move = high_cards[-1]            # Play lowest high card
+                        return chosen_move
+                    else:
+                        chosen_move = high_cards[0]            # Play first higest
+                        return chosen_move
+                elif len(high_cards) == len(low_cards):
+                    if opponent_card_value >= get_card_value(high_cards[0]):
+                        sort_cards(low_cards)
+                        chosen_move = low_cards[0]
+                        return chosen_move
+                    else:
+                        sort_cards(high_cards)
+                        chosen_move = high_cards[-1]        # Play lowest high card
+                        return chosen_move
+                else:
+                    sort_cards(low_cards)
+                    chosen_move = low_cards[0]
+                    return chosen_move
+
+            if current_phase == 2:
+                for index, move in enumerate(moves):
+                    if move[0] is not None and Deck.get_suit(move[0]) == opponent_card_suit:
+                        moves_same_suit.append(move)
+                        if get_card_value(move[0]) < opponent_card_value:
+                            low_same_suit.append(move)
+                        else:
+                            high_same_suit.append(move)
+
+                if len(high_same_suit) > 0:            # ALWAYS TRY first to play highest of the same suit
+                    if opponent_card_value < get_card_value(high_same_suit[0]):
+                        chosen_move = high_same_suit[0]
+                        return chosen_move
+                    else:
+                        chosen_move = moves_same_suit[0]
+                        return chosen_move
+                elif len(low_same_suit) > 0:
+                    if len(low_same_suit) != 0:
+                        sort_cards(low_same_suit)
+                        chosen_move = low_same_suit[0]
+                        return chosen_move
+                    elif len(low_cards) != 0:
+                        chosen_move = moves[0]
+                        return chosen_move
+                elif len(high_same_suit) != 0 and len(low_same_suit) == len(high_same_suit):
+                    sort_cards(low_same_suit)
+                    chosen_move = moves[0]
+                    return chosen_move
+
+                if len(moves_trump) > 0:              # ALWAYS TRY TO PLAY TRUMPS IN THE PHASE 2, after the same suit
+                    sort_cards(moves_trump)
+                    chosen_move = moves_trump[0]
+                    return chosen_move
+                elif len(high_cards) > len(low_cards):
                     sort_cards(high_cards)
                     chosen_move = high_cards[0]
                     return chosen_move
-                else:
+                elif len(high_cards) < len(low_cards):
                     sort_cards(low_cards)
-                    chosen_move = low_cards[safe_moves_counter - 1]
+                    chosen_move = low_cards[0]
+                    return chosen_move
+                elif len(high_cards) == len(low_cards):
+                    if len(low_same_suit) != 0:
+                        sort_cards(low_same_suit)
+                        chosen_move = low_same_suit[0]
+                        return chosen_move
+                    elif len(low_cards) != 0:
+                        sort_cards(low_cards)
+                        chosen_move = low_cards[0]
+                        return chosen_move
+                elif len(low_same_suit) != 0:
+                        sort_cards(low_same_suit)
+                        chosen_move = low_same_suit[0]
+                        return chosen_move
+                elif len(low_cards) != 0:
+                    sort_cards(low_cards)
+                    chosen_move = low_cards[0]
+                    return chosen_move
+                else:
+                    chosen_move = move[0]
                     return chosen_move
