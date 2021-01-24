@@ -2,7 +2,6 @@
 Train a machine learning model for the classifier bot. We create a player, and watch it play games against itself.
 Every observed state is converted to a feature vector and labeled with the eventual outcome
 (-1.0: player 2 won, 1.0: player 1 won)
-
 This is part of the second worksheet.
 """
 from api import State, util
@@ -18,18 +17,14 @@ import sklearn.linear_model
 from sklearn.neural_network import MLPClassifier
 import joblib
 
-# from bots.rand import rdeep
-from bots.rdeep import rdeep
-#from bots.kbbot import kbbot
+# from bots.stealth import stealth
+# from bots.rdeep import rdeep
+from bots.rdeep2 import rdeep2
 
 from bots.ml.ml import features
 
-<<<<<<< HEAD
 
-def create_dataset(path, player=rdeep.Bot(), games=5000, phase=1):
-=======
-def create_dataset(path, player=rdeep.Bot(), games=100, phase=1):
->>>>>>> main
+def create_dataset(path, player=rdeep2.Bot(), games=1000, phase=1):
     """Create a dataset that can be used for training the ML bot model.
     The dataset is created by having the player (bot) play games against itself.
     The games parameter indicates how many games will be started.
@@ -37,12 +32,11 @@ def create_dataset(path, player=rdeep.Bot(), games=100, phase=1):
     Each game will be played and the game situations will be stored.
     Then, the game ends and it is recorded whether the game situations resulted in a win or loss for player 1.
     In other words, each game situation is stored with the corresponding class label (won/lost).
-
     Keyword arguments
     path -- the pathname where the dataset is to be stored
     player -- the player which will play against itself, default the rand Bot
     games -- the number of games to play, default 2000
-    phase -- whether to start the games in phase 1, the default, or phase 2
+    phase -- wheter to start the games in phase 1, the default, or phase 2
     """
 
     data = []
@@ -127,7 +121,7 @@ parser.add_argument("--no-train",
 options = parser.parse_args()
 
 if options.overwrite or not os.path.isfile(options.dset_path):
-    create_dataset(options.dset_path, player=rdeep.Bot(), games=100)
+    create_dataset(options.dset_path, player=rdeep2.Bot(), games=1000)
 
 if options.train:
 
