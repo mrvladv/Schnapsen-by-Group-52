@@ -63,7 +63,6 @@ class Bot:
 
         # Get a list of all legal moves
         moves = state.moves()
-        print("Moves: ", moves)
 
         # Sometimes many moves have the same, highest score, and we'd like the bot to pick a random one.
         # Shuffling the list of moves ensures that.
@@ -89,24 +88,17 @@ class Bot:
                             best_score = score
                             best_move = move
 
-                    print("score: ", score)
-                    print("Best move,", best_move)
+                if state.get_opponents_played_card() is None:
+                    for s in range(self.__num_samples):
 
-                elif state.get_opponents_played_card() is None:
-                    if move[0] is None:
-                        best_move = move
-                        break
-                    else:
-                        for s in range(self.__num_samples):
+                        # If we are in an imperfect information state, make an assumption.
+                        sample_state = state.make_assumption() if state.get_phase() == 1 else state
 
-                            # If we are in an imperfect information state, make an assumption.
-                            sample_state = state.make_assumption() if state.get_phase() == 1 else state
+                        score = self.evaluate(sample_state.next(move), player)
 
-                            score = self.evaluate(sample_state.next(move), player)
-
-                            if score > best_score:
-                                best_score = score
-                                best_move = move
+                        if score > best_score:
+                            best_score = score
+                            best_move = move
             elif move is None:
                 print(move, "< -- This is none!!!")
 

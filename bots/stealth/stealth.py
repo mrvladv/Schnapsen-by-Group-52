@@ -107,12 +107,21 @@ class Bot:
             if len(possible_trumps_ex) > 0:
                 chosen_move = possible_trumps_ex[0]
                 return chosen_move
+<<<<<<< HEAD
 
             if len(moves_trump) > TRUMP_OPTIMAL_NUMBER:
                 sort_cards(moves_trump)
                 chosen_move = moves_trump[0]
                 return chosen_move
 
+=======
+
+            if len(moves_trump) > TRUMP_OPTIMAL_NUMBER:
+                sort_cards(moves_trump)
+                chosen_move = moves_trump[0]
+                return chosen_move
+
+>>>>>>> main
             if len(high_cards) > 0:
                 chosen_move = high_cards[0]
                 return chosen_move
@@ -152,10 +161,13 @@ class Bot:
             if len(high_same_suit) > 0:
                 chosen_move = high_same_suit[0]
                 return chosen_move
+<<<<<<< HEAD
 
             if len(low_same_suit) > 0:
                 chosen_move = low_same_suit[0]
                 return chosen_moves
+=======
+>>>>>>> main
 
             # Get other moves of the different suit
             for index, move in enumerate(moves):
