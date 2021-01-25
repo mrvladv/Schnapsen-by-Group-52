@@ -68,7 +68,6 @@ class Bot:
         """
 
         """
-
         # All legal moves
         moves = state.moves()
         chosen_move = moves[0]
@@ -107,21 +106,12 @@ class Bot:
             if len(possible_trumps_ex) > 0:
                 chosen_move = possible_trumps_ex[0]
                 return chosen_move
-<<<<<<< HEAD
 
             if len(moves_trump) > TRUMP_OPTIMAL_NUMBER:
                 sort_cards(moves_trump)
                 chosen_move = moves_trump[0]
                 return chosen_move
 
-=======
-
-            if len(moves_trump) > TRUMP_OPTIMAL_NUMBER:
-                sort_cards(moves_trump)
-                chosen_move = moves_trump[0]
-                return chosen_move
-
->>>>>>> main
             if len(high_cards) > 0:
                 chosen_move = high_cards[0]
                 return chosen_move
@@ -130,7 +120,7 @@ class Bot:
                 chosen_move = low_cards[0]
                 return chosen_move
 
-        if state.get_opponents_played_card() is not None:
+        if state.get_opponents_played_card() is not None and current_phase == 1:
             opponent_card_suit = Deck.get_suit(state.get_opponents_played_card())
             opponent_card_value = get_card_value(state.get_opponents_played_card())
             moves = state.moves()
@@ -157,17 +147,16 @@ class Bot:
                     moves_same_suit.append(move)
                     if get_card_value(move[0]) > opponent_card_value:
                         high_same_suit.append(move)
+                    else:
+                        low_same_suit.append(move)
 
             if len(high_same_suit) > 0:
                 chosen_move = high_same_suit[0]
                 return chosen_move
-<<<<<<< HEAD
 
             if len(low_same_suit) > 0:
                 chosen_move = low_same_suit[0]
-                return chosen_moves
-=======
->>>>>>> main
+                return chosen_move
 
             # Get other moves of the different suit
             for index, move in enumerate(moves):
@@ -177,24 +166,76 @@ class Bot:
                     else:
                         low_cards.append(move)
 
-            print("====================+ PLAYER 2 TURN +====================")
-            print("Phase: ", state.get_phase())
-            print("OPPONENT SUIT:", opponent_card_suit)
-            print("OPPONENT VALUE: ", opponent_card_value)
-            print("TRUMP moves:", moves_trump)
-            print("H-I-G-H cards: ", high_cards)
-            print("l_o_w cards: ", low_cards)
-            print("High SAME SUIT:", high_same_suit)
-            print("Low SAME SUIT:", low_same_suit)
-            print("Moves SAME SUIT:", moves_same_suit)
-            print("=====")
-            print("TRUMP count:", len(moves_trump))
-            print("High card count:", len(high_cards))
-            print("Low card count:", len(low_cards))
-            print("====================+ PRINT END +====================")
+            # print("====================+ PLAYER 2 TURN +====================")
+            # print("Phase: ", state.get_phase())
+            # print("OPPONENT SUIT:", opponent_card_suit)
+            # print("OPPONENT VALUE: ", opponent_card_value)
+            # print("TRUMP moves:", moves_trump)
+            # print("H-I-G-H cards: ", high_cards)
+            # print("l_o_w cards: ", low_cards)
+            # print("High SAME SUIT:", high_same_suit)
+            # print("Low SAME SUIT:", low_same_suit)
+            # print("Moves SAME SUIT:", moves_same_suit)
+            # print("=====")
+            # print("TRUMP count:", len(moves_trump))
+            # print("High card count:", len(high_cards))
+            # print("Low card count:", len(low_cards))
+            # print("====================+ PRINT END +====================")
 
             if len(low_cards) > 0:
                 chosen_move = low_cards[0]
+                return chosen_move
+
+        if state.get_opponents_played_card() is not None and current_phase == 2:
+            opponent_card_suit = Deck.get_suit(state.get_opponents_played_card())
+            opponent_card_value = get_card_value(state.get_opponents_played_card())
+            moves = state.moves()
+            # Sorting lists
+            moves_same_suit = []
+            moves_trump = []
+            high_cards = []
+            low_cards = []
+            high_same_suit = []
+            low_same_suit = []
+
+            for index, move in enumerate(moves):
+
+                if move[0] is not None and Deck.get_suit(move[0]) == opponent_card_suit:
+                    if get_card_value(move[0]) > opponent_card_value:
+                        high_same_suit.append(move)
+                    else:
+                        low_same_suit.append(move)
+
+            if len(high_same_suit) > 0:
+                chosen_move = high_same_suit[0]
+                return chosen_move
+
+            if len(low_same_suit) > 0:
+                chosen_move = low_same_suit[0]
+                return chosen_move
+
+            for index, move in enumerate(moves):
+
+                if move[0] is not None and Deck.get_suit(move[0]) == state.get_trump_suit():
+                    moves_trump.append(move)
+
+            if len(moves_trump) > 0:
+                chosen_move = moves_trump[0]
+                return chosen_move
+
+            # If it doesn't have neither same suit, nor trumps to play, get other moves of the different suit
+            for index, move in enumerate(moves):
+                if move[0] is not None and Deck.get_suit(move[0]) != opponent_card_suit:
+                    if get_card_value(move[0]) >= opponent_card_value:
+                        high_cards.append(move)
+                    else:
+                        low_cards.append(move)
+
+            if len(low_cards) > 0:
+                chosen_move = low_cards[0]
+                return chosen_move
+            else:
+                chosen_move = high_cards[0]
                 return chosen_move
 
         return chosen_move
